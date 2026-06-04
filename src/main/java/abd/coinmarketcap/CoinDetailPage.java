@@ -3,6 +3,7 @@ package abd.coinmarketcap;
 import java.time.Duration;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -29,11 +30,11 @@ public class CoinDetailPage {
             return wait.until(driver -> {
                 try {
                     return driver.findElement(coinNameBy).getText().equalsIgnoreCase(coinName);
-                } catch (org.openqa.selenium.StaleElementReferenceException e) {
+                } catch (StaleElementReferenceException e) {
                     return null;
                 }
             });
-        } catch (org.openqa.selenium.TimeoutException e) {
+        } catch (Exception e) {
             return false;
         }
     }
