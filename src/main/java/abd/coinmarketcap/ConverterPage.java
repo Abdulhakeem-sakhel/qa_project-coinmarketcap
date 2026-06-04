@@ -23,6 +23,10 @@ public class ConverterPage {
     private By loadingIconBy = new By.ByCssSelector("div.cmc-converter__text svg");
     private By resultsNumberBy = new By.ByCssSelector("em.cmc-converter__conversion-result");
 
+    private By swapButtonBy = new By.ByCssSelector("button[data-qa-id='swap-currencies']");
+    private By fromConvertTextBy = new By.ByCssSelector("div.converter__text-row > div:nth-child(1)");
+    private By toConvertTextBy = new By.ByCssSelector("div.converter__text-row > div:nth-child(3)");
+
     private WebDriver driver;
     private WebDriverWait wait;
 
@@ -57,5 +61,18 @@ public class ConverterPage {
         } catch(Exception e) {
             return false;
         }
+    }
+
+    public void swapCurrencies() {
+        wait.until(ExpectedConditions.elementToBeClickable(swapButtonBy)).click();
+    }
+
+    public boolean verifyCurrency(String fromCurrency, String toCurrency) {
+        String fromText = wait.until(ExpectedConditions.visibilityOfElementLocated(fromConvertTextBy)).getText();
+        String toText = wait.until(ExpectedConditions.visibilityOfElementLocated(toConvertTextBy)).getText();
+        System.out.println(fromText);
+        System.out.println(toText);
+        return fromText.toLowerCase().contains(fromCurrency.toLowerCase()) &&
+                toText.toLowerCase().contains(toCurrency.toLowerCase());
     }
 }

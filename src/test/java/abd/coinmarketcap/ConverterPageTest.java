@@ -30,12 +30,27 @@ public class ConverterPageTest extends BaseTest {
     public void convertCryptoToFiat() {
         String fromCurrency = "Bitcoin";
         String toCurrency = "USD";
-        float amount = 1;
+        float amount = 5;
 
         converterPage.setFromCurrency(fromCurrency);
         converterPage.setToCurrency(toCurrency);
         converterPage.setAmount(amount);
 
         Assert.assertTrue(converterPage.verifyCalculationNumberIsDisplayed());
+        Assert.assertTrue(converterPage.verifyCurrency(fromCurrency, toCurrency));
+    }
+
+    @Test
+    public void swappingFromTo() {
+        String fromCurrency = "Bitcoin";
+        String toCurrency = "USD";
+        float amount = 5;
+
+        converterPage.setFromCurrency(fromCurrency);
+        converterPage.setToCurrency(toCurrency);
+        converterPage.setAmount(amount);
+        converterPage.swapCurrencies();
+        Assert.assertTrue(converterPage.verifyCalculationNumberIsDisplayed());
+        Assert.assertTrue(converterPage.verifyCurrency(toCurrency, fromCurrency));
     }
 }
