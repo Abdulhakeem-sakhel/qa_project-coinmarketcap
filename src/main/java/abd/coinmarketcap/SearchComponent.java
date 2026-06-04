@@ -4,21 +4,22 @@ import java.time.Duration;
 import java.util.List;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class SearchPage {
+public class SearchComponent {
 	private By searchBoxBy = new By.ByCssSelector("div.search-input-static");
 	private By searchInputBy = new By.ByCssSelector("input.search-input");
 	private By searchResultsCoinNamesBy = new By.ByCssSelector("div.SearchCryptoRow_item-name__OwkC9 > span:first-child");
 
-
+	@SuppressWarnings("unused")
 	private WebDriver driver;
     private WebDriverWait wait;
 
-	public SearchPage(WebDriver driver) {
+	public SearchComponent(WebDriver driver) {
 		this.driver = driver;
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 	}
@@ -28,6 +29,11 @@ public class SearchPage {
 
 	public void writeInSearchInput(String keyword) {
 		wait.until(ExpectedConditions.visibilityOfElementLocated(searchInputBy)).sendKeys(keyword);
+	}
+
+	public void selectFirstSearchResults() {
+		List <WebElement> names =wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(searchResultsCoinNamesBy));
+		names.get(0).click();
 	}
 
 	public boolean verifySearchResults(String keyword) {
