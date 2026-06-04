@@ -34,5 +34,19 @@ public class SearchTest extends BaseTest {
         Assert.assertTrue(coinPage.verifyCoinSymbol(coinSymbol));
         Assert.assertTrue(coinPage.verifyLivePriceIsDisplayed(), "The price is not displayed");
     }
+
+    @Test
+    public void searchForCoinSymbol() {
+        String coinName = "Ethereum";
+        String coinSymbol = "ETH";
+        searchCom.openSearch();
+        searchCom.writeInSearchInput(coinSymbol);
+        searchCom.selectFirstSearchResults();
+        
+        Assert.assertTrue(coinPage.verifyCoinUrl(coinName), "The url is for another coin which is " + driver.getCurrentUrl());
+        Assert.assertTrue(coinPage.verifyCoinName(coinName), "The name of the coin is not there");
+        Assert.assertTrue(coinPage.verifyCoinSymbol(coinSymbol));
+        Assert.assertTrue(coinPage.verifyLivePriceIsDisplayed(), "The price is not displayed");
+    }
     
 }
