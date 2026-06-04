@@ -7,7 +7,7 @@ import org.testng.annotations.BeforeClass;
 
 public abstract class BaseTest {
 
-    protected static final String BASE_URL = "coinmarketcap";
+    protected static final String BASE_URL = "https://coinmarketcap.com/";
 
     protected WebDriver driver;
 
