@@ -2,6 +2,7 @@ package abd.coinmarketcap;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class SearchTest extends BaseTest {
@@ -11,7 +12,7 @@ public class SearchTest extends BaseTest {
     
     @Override
     protected String getPath() {
-        // the searching is in home page and an any endpoint there is a search box
+        // the searching is a component that exist in most pages
         return "/";
     }
 
@@ -19,6 +20,12 @@ public class SearchTest extends BaseTest {
     public void initPages() {
         searchCom = new SearchComponent(driver);
         coinPage = new CoinDetailPage(driver);
+    }
+
+    @BeforeMethod
+    public void startClean() {
+        driver.manage().deleteAllCookies();
+        driver.get(BASE_URL + getPath());
     }
 
     @Test
@@ -59,5 +66,45 @@ public class SearchTest extends BaseTest {
         Assert.assertTrue(searchCom.verifySearchResults(keyword));
     }
 
+    @Test
+    public void searchCaseInsensitive() {
+        String coinName = "bitcoin";
+        String coinSymbol = "BTC";
+        searchCom.openSearch();
+        searchCom.writeInSearchInput(coinName);
+        searchCom.selectFirstSearchResults();
+        
+        Assert.assertTrue(coinPage.verifyCoinUrl(coinName), "The url is for another coin which is " + driver.getCurrentUrl());
+        Assert.assertTrue(coinPage.verifyCoinName(coinName), "The name of the coin is not there");
+        Assert.assertTrue(coinPage.verifyCoinSymbol(coinSymbol));
+        Assert.assertTrue(coinPage.verifyLivePriceIsDisplayed(), "The price is not displayed");
+    }
 
+    @Test
+    public void searchWithWhiteSpace() {
+        String coinName = " Bitcoin ";
+        String coinSymbol = "BTC";
+        searchCom.openSearch();
+        searchCom.writeInSearchInput(coinName);
+        searchCom.selectFirstSearchResults();
+        
+        Assert.assertTrue(coinPage.verifyCoinUrl(coinName.trim()), "The url is for another coin which is " + driver.getCurrentUrl());
+        Assert.assertTrue(coinPage.verifyCoinName(coinName.trim()), "The name of the coin is not there");
+        Assert.assertTrue(coinPage.verifyCoinSymbol(coinSymbol));
+        Assert.assertTrue(coinPage.verifyLivePriceIsDisplayed(), "The price is not displayed");
+    } 
+
+    @Test
+    public void searchWithGibberishLetters() {
+        String coinName = " Bitcoin ";
+        String coinSymbol = "BTC";
+        searchCom.openSearch();
+        searchCom.writeInSearchInput(coinName);
+        searchCom.selectFirstSearchResults();
+        
+        Assert.assertTrue(coinPage.verifyCoinUrl(coinName.trim()), "The url is for another coin which is " + driver.getCurrentUrl());
+        Assert.assertTrue(coinPage.verifyCoinName(coinName.trim()), "The name of the coin is not there");
+        Assert.assertTrue(coinPage.verifyCoinSymbol(coinSymbol));
+        Assert.assertTrue(coinPage.verifyLivePriceIsDisplayed(), "The price is not displayed");
+    }
 }

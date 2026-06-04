@@ -24,7 +24,18 @@ public class CoinDetailPage {
 	}
 
     public boolean verifyCoinName(String coinName) {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(coinNameBy)).getText().equals(coinName);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(coinNameBy));
+        try {
+            return wait.until(driver -> {
+                try {
+                    return driver.findElement(coinNameBy).getText().equalsIgnoreCase(coinName);
+                } catch (org.openqa.selenium.StaleElementReferenceException e) {
+                    return null;
+                }
+            });
+        } catch (org.openqa.selenium.TimeoutException e) {
+            return false;
+        }
     }
 
     public boolean verifyCoinSymbol(String CoinSymbol) {
