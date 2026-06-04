@@ -1,6 +1,7 @@
 package abd.coinmarketcap;
 
 import java.time.Duration;
+import java.util.regex.Pattern;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -47,10 +48,10 @@ public class ConverterPage {
         wait.until(ExpectedConditions.elementToBeClickable(toCoinInputBy)).sendKeys(currencyName + Keys.ENTER);
     }
 
-    public void setAmount(float amount) {
+    public void setAmount(String amount) {
         WebElement amountInput = wait.until(ExpectedConditions.visibilityOfElementLocated(converterFromInputBy));
         amountInput.sendKeys(Keys.DELETE);
-        amountInput.sendKeys(String.valueOf(amount));
+        amountInput.sendKeys(amount);
     }
 
     public boolean verifyCalculationNumberIsDisplayed() {
@@ -74,5 +75,10 @@ public class ConverterPage {
         System.out.println(toText);
         return fromText.toLowerCase().contains(fromCurrency.toLowerCase()) &&
                 toText.toLowerCase().contains(toCurrency.toLowerCase());
+    }
+
+    public boolean verifyAmount(String amount) {
+        Pattern pattern = Pattern.compile(Pattern.quote(amount));
+        return wait.until(ExpectedConditions.textMatches(fromConvertTextBy, pattern));
     }
 }

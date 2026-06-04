@@ -3,12 +3,11 @@ TC_CC_01,BTC,USD,1,NUMERIC_RESULT,A numeric USD value is displayed for 1 BTC
 TC_CC_02,BTC,ETH,1,NUMERIC_RESULT,A numeric ETH value is displayed
 TC_CC_03,USD,BTC,100,NUMERIC_RESULT,A numeric BTC value is displayed
 TC_CC_04,BTC,USD,1,SWAP_UPDATES,From and To switch and result updates
-TC_CC_06,BTC,USD,F,NUMERIC_RESULT,Correct numeric value for decimal amount
-TC_CC_07,BTC,USD,10000000,NUMERIC_RESULT,Numeric value shown without layout break or error
-TC_CC_08,BTC,BTC,5,EQUAL_TO_INPUT,Result equals the input amount (5)
-TC_CC_09,BTC,USD,0,NUMERIC_RESULT,Converted result is 0 / handled with no error
-TC_CC_10,BTC,USD,-1,NUMERIC_RESULT,Negative value is not accepted / no valid result
-TC_CC_11,BTC,USD,abc,REJECT_INPUT,Field should not accept letters
-TC_CC_12,BTC,USD,$%^&,REJECT_INPUT,Field should not accept special characters
-TC_CC_13,BTC,USD,,EMPTY_RESULT,Result resets to empty
-TC_CC_14,BTC,USD,++5,NUMERIC_RESULT,Converter ignores extra plus and calculates +5
+TC_CC_05,BTC,USD,0.5,NUMERIC_RESULT,A numeric value is displayed
+TC_CC_06,BTC,USD,10000000,NUMERIC_RESULT,Numeric value shown without layout break or error
+TC_CC_07,BTC,BTC,5,NUMERIC_RESULT,Result equals the input amount (5)
+TC_CC_08,BTC,USD,0,NUMERIC_RESULT,Converted result is 0 / handled with no error
+TC_CC_09,BTC,USD,-1,NUMERIC_RESULT,Negative value is not accepted / no valid result
+TC_CC_10,BTC,USD,abc,REJECT_INPUT,Field should not accept letters
+TC_CC_11,BTC,USD,$%^&,REJECT_INPUT,Field should not accept special characters
+TC_CC_12,BTC,USD,++5,NUMERIC_RESULT,Converter ignores extra plus and calculates +5

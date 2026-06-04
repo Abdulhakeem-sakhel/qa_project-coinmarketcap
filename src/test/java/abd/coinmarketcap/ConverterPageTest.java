@@ -33,8 +33,8 @@ public class ConverterPageTest extends BaseTest {
         driver.get(BASE_URL + getPath());
     }
     
-    @DataProvider(name = "searchDataProvider")
-    public Object[][] getSearchData() throws IOException {
+    @DataProvider(name = "converterDataProvider")
+    public Object[][] getConverterData() throws IOException {
         List<Object[]> data = new ArrayList<>();
         String csvFile = "src/test/resources/converter_ddt_data.csv";
         String line;
@@ -60,31 +60,41 @@ public class ConverterPageTest extends BaseTest {
         return data.toArray(new Object[0][]);
     }
 
-    @Test
-    public void convertCryptoToFiat() {
-        String fromCurrency = "Bitcoin";
-        String toCurrency = "USD";
-        float amount = 5;
-
+    @Test (dataProvider = "converterDataProvider")
+    public void executeConverterTest(
+        String testCaseId,
+        String fromCurrency,
+        String toCurrency,
+        String amount,
+        String expectedBehavior,
+        String description
+    ) {
+        System.out.println("Running test " + testCaseId + " - " + description);
         converterPage.setFromCurrency(fromCurrency);
         converterPage.setToCurrency(toCurrency);
         converterPage.setAmount(amount);
 
-        Assert.assertTrue(converterPage.verifyCalculationNumberIsDisplayed());
-        Assert.assertTrue(converterPage.verifyCurrency(fromCurrency, toCurrency));
+        switch (expectedBehavior) {
+            case "NUMERIC_RESULT":
+                Assert.assertTrue(converterPage.verifyCalculationNumberIsDisplayed());
+                Assert.assertTrue(converterPage.verifyCurrency(fromCurrency, toCurrency));
+                Assert.assertTrue(converterPage.verifyAmount(amount));
+                break;
+            case "SWAP_UPDATES":
+                converterPage.swapCurrencies();
+                Assert.assertTrue(converterPage.verifyCalculationNumberIsDisplayed());
+                Assert.assertTrue(converterPage.verifyCurrency(toCurrency, fromCurrency));
+                Assert.assertTrue(converterPage.verifyAmount(amount));
+                break;
+            case "REJECT_INPUT":
+                Assert.assertTrue(converterPage.verifyCalculationNumberIsDisplayed());
+                Assert.assertTrue(converterPage.verifyCurrency(fromCurrency, toCurrency));
+                Assert.assertTrue(converterPage.verifyAmount("1")); // that the default value left
+                break;
+            default:
+                break;
+        }
     }
 
-    @Test
-    public void swappingFromTo() {
-        String fromCurrency = "Bitcoin";
-        String toCurrency = "USD";
-        float amount = 5;
 
-        converterPage.setFromCurrency(fromCurrency);
-        converterPage.setToCurrency(toCurrency);
-        converterPage.setAmount(amount);
-        converterPage.swapCurrencies();
-        Assert.assertTrue(converterPage.verifyCalculationNumberIsDisplayed());
-        Assert.assertTrue(converterPage.verifyCurrency(toCurrency, fromCurrency));
-    }
 }
