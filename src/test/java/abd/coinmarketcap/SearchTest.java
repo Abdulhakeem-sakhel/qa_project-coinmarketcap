@@ -2,7 +2,6 @@ package abd.coinmarketcap;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class SearchTest extends BaseTest {
@@ -20,12 +19,6 @@ public class SearchTest extends BaseTest {
     public void initPages() {
         searchCom = new SearchComponent(driver);
         coinPage = new CoinDetailPage(driver);
-    }
-
-    @BeforeMethod
-    public void startClean() {
-        driver.manage().deleteAllCookies();
-        driver.get(BASE_URL + getPath());
     }
 
     @Test
