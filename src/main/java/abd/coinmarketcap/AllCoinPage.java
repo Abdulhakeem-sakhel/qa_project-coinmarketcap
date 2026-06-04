@@ -1,10 +1,12 @@
 package abd.coinmarketcap;
 
 import java.time.Duration;
+import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class AllCoinPage {
@@ -24,8 +26,19 @@ public class AllCoinPage {
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    public void loadTheTable() {
+    public int loadTheTable() {
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+
+        while (true) {
+            final int before = driver.findElements(marketCapCells).size();
+            List<WebElement> rows = driver.findElements(marketCapCells);
+            js.executeScript("arguments[0].scrollIntoView(true);", rows.get(rows.size() - 1));
+            try {
+                wait.until(driver -> driver.findElements(marketCapCells).size() > before);
+            } catch (Exception e) {
+                break;
+            }
+        }
+        return driver.findElements(marketCapCells).size();
     }
 }
