@@ -1,5 +1,6 @@
 package abd.coinmarketcap;
 
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -18,8 +19,9 @@ public class SortAndFilterTest extends BaseTest {
     }
 
     @Test
-    public void loading() {
-        coinsPage.loadTheTable();
+    public void verifyTheDefaultTableOrdering() {
+        Assert.assertEquals(coinsPage.loadTheTable(), 101);
+        Assert.assertTrue(coinsPage.checkMarketCapColumnOrderDes(100));
     }
     
 }
