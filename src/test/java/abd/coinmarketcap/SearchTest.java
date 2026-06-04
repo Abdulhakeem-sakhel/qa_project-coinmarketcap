@@ -49,4 +49,15 @@ public class SearchTest extends BaseTest {
         Assert.assertTrue(coinPage.verifyLivePriceIsDisplayed(), "The price is not displayed");
     }
     
+    @Test 
+    public void checkSearchResult() {
+        String keyword = "doge";
+        
+        searchCom.openSearch();
+        searchCom.writeInSearchInput(keyword);
+
+        Assert.assertTrue(searchCom.verifySearchResults(keyword));
+    }
+
+
 }

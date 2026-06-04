@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.util.List;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -14,6 +13,7 @@ public class SearchComponent {
 	private By searchBoxBy = new By.ByCssSelector("div.search-input-static");
 	private By searchInputBy = new By.ByCssSelector("input.search-input");
 	private By searchResultsCoinNamesBy = new By.ByCssSelector("div.SearchCryptoRow_item-name__OwkC9 > span:first-child");
+	private By searchResultsCoinSymbolBy = new By.ByCssSelector("div.SearchCryptoRow_item-symbol__gYcb1");
 
 	@SuppressWarnings("unused")
 	private WebDriver driver;
@@ -37,12 +37,20 @@ public class SearchComponent {
 	}
 
 	public boolean verifySearchResults(String keyword) {
-		List<WebElement> coinNames = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(searchResultsCoinNamesBy));
-		for (WebElement coinName : coinNames ) {
-			if (!coinName.getText().contains(keyword)) {
-				return false;
-			}
+		List<WebElement> coinNamesElements = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(searchResultsCoinNamesBy));
+		List<WebElement> coinSymbolElements = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(searchResultsCoinSymbolBy));
+		
+		for (int rowIndex = 0; rowIndex < coinNamesElements.size(); rowIndex++) {
+			String coinName = coinNamesElements.get(rowIndex).getText();
+			String coinSymbol = coinSymbolElements.get(rowIndex).getText();
+
+			if(	!coinName.toLowerCase().contains(keyword) && 
+				!coinSymbol.toLowerCase().contains(keyword)	) 
+				{
+					return false;
+				}
 		}
+		
 		return true;
 	}
 }
