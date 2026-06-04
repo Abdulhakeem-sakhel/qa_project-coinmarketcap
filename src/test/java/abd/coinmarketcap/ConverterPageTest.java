@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -25,12 +24,6 @@ public class ConverterPageTest extends BaseTest {
     @BeforeClass
     public void initPage() {
         converterPage = new ConverterPage(driver);
-    }
-
-    @BeforeMethod
-    public void startClean() {
-        driver.manage().deleteAllCookies();
-        driver.get(BASE_URL + getPath());
     }
     
     @DataProvider(name = "converterDataProvider")
