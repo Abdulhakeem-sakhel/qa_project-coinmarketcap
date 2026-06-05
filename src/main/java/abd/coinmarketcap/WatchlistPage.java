@@ -15,7 +15,7 @@ public class WatchlistPage {
     private By searchResultsBy = new By.ByCssSelector("div.coin-item-list-wrapper");
     private By saveButtonBy = new By.ByXPath("//div[@data-role='btn-content-item' and contains(text(), 'Save')]");
     private By deleteRowButtonBy = new By.ByCssSelector("span.icon-Star-Filled");
-    private By deleteMessageBy = new By.ByCssSelector("//span[@data-role='mi-content-item' and contains(text(), 'has been removed')]");
+    private By deleteMessageBy = new By.ByXPath("//span[@data-role='mi-content-item' and contains(text(), 'has been removed')]");
     private By coinNameCellsBy = new By.ByCssSelector("p.coin-item-name");
     private By coinSymbolCellsBy = new By.ByCssSelector("coin-item-symbol");
 
@@ -40,7 +40,7 @@ public class WatchlistPage {
         wait.until(ExpectedConditions.visibilityOfElementLocated(saveButtonBy)).click();
     }
 
-    private int getCoinRowIndex(String coinName) {
+    public int getCoinRowIndex(String coinName) {
         try {
             List<WebElement> namesCell = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(coinNameCellsBy));
             for (int rowIndex = 0; rowIndex < namesCell.size(); rowIndex++) {
@@ -62,5 +62,11 @@ public class WatchlistPage {
         }
         wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(deleteRowButtonBy)).get(rowIndex).click();;
 
+    }
+    public boolean verifyDeleteMessage(String coinName) {
+        
+            WebElement message = wait.until(ExpectedConditions.visibilityOfElementLocated(deleteMessageBy));
+            return message.getText().contains(coinName);
+        
     }
 }

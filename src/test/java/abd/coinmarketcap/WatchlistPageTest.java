@@ -29,11 +29,15 @@ public class WatchlistPageTest extends BaseTest {
     
     @Test
     public void addCoin() {
-        watchlistPage.addCoinToWhishList("ETH");
+        String coinName = "Bitcoin";
+        watchlistPage.addCoinToWhishList(coinName);
+        Assert.assertNotEquals(watchlistPage.getCoinRowIndex(coinName), -1);
     }
 
     @Test
     public void deleteCoin() {
-        watchlistPage.deleteCoin("Bitcoin");
+        String coinName = "Bitcoin";
+        watchlistPage.deleteCoin(coinName);
+        Assert.assertTrue(watchlistPage.verifyDeleteMessage(coinName));
     }
 }
