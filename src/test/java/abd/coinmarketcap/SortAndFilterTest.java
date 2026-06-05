@@ -50,6 +50,7 @@ public class SortAndFilterTest extends BaseTest {
     public void goToTheSecondPage() {
         coinsPage.goNextPage();
         Assert.assertEquals(driver.getCurrentUrl(), BASE_URL + getPath() + "/?page=2");
+        Assert.assertTrue(coinsPage.verifyRank(101, 200));
     }
 
     @Test

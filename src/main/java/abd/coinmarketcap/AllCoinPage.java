@@ -15,6 +15,7 @@ public class AllCoinPage {
     // any column cell have a unique class even in a different layout
     private static final String MARKET_CAP_CELLS_CSS = "span.sc-11478e5d-1";
     private static final String VOLUME_CELLS_CSS = "div.sc-4c05d6ef-0.sc-8dd8fbb5-0 p.fOLOxZ";
+    private static final String RANK_CELLS_CSS = "p.sc-71024e3e-0.biekbf";
 
     private By marketCapCellsBy = By.cssSelector(MARKET_CAP_CELLS_CSS);
 
@@ -143,7 +144,15 @@ public class AllCoinPage {
                         "arguments[0].scrollIntoView({block: 'center'});"
                                 , pagination);
     }
-
+    public boolean verifyRank(int start, int end) {
+        List<Long> rankList = snapshotColumnValues(RANK_CELLS_CSS);
+        for (long rank : rankList) {
+            if (rank < start || rank > end) {
+                return false;
+            }
+        }
+        return true;
+    }
     public void goNextPage() {
         scrollToPagination();
         wait.until(ExpectedConditions.visibilityOfElementLocated(paginationNextButtonBy)).click();
