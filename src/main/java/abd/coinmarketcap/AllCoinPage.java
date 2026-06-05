@@ -19,6 +19,8 @@ public class AllCoinPage {
     private By marketCapCellsBy = By.cssSelector(MARKET_CAP_CELLS_CSS);
 
     private By volumeSortingToggleBy = new By.ByXPath("//p[contains(@class, 'llNEXf') and contains(text(), 'Volume')]");
+    private By marketSortingToggleBy = new By.ByXPath("//p[contains(@class, 'llNEXf') and contains(text(), 'Market Cap')]");
+
     private By activeSortingBy = new By.ByCssSelector("span[data-active='true']");
 
     private static final int STABLE_ROUNDS = 3;
@@ -55,14 +57,25 @@ public class AllCoinPage {
     }
 
     public void toggleVolumeOrderingAsc() {
-        WebElement arrowIndentor = driver.findElement(activeSortingBy);
-        wait.until(ExpectedConditions.attributeContains(arrowIndentor, "data-direction", "desc"));
         driver.findElement(volumeSortingToggleBy).click();
+        WebElement arrowIndentor = wait.until(ExpectedConditions.visibilityOfElementLocated(activeSortingBy));
         wait.until(ExpectedConditions.attributeContains(arrowIndentor, "data-direction", "asc"));
     }
 
     public void toggleVolumeOrderingDesc() {
         driver.findElement(volumeSortingToggleBy).click();
+        WebElement arrowIndentor = wait.until(ExpectedConditions.visibilityOfElementLocated(activeSortingBy));
+        wait.until(ExpectedConditions.attributeContains(arrowIndentor, "data-direction", "desc"));
+    }
+
+    public void toggleMarketCapOrderingAsc() {
+        driver.findElement(marketSortingToggleBy).click();
+        WebElement arrowIndentor = wait.until(ExpectedConditions.visibilityOfElementLocated(activeSortingBy));
+        wait.until(ExpectedConditions.attributeContains(arrowIndentor, "data-direction", "asc"));
+    }
+
+    public void toggleMarketCapOrderingDesc() {
+        driver.findElement(marketSortingToggleBy).click();
         WebElement arrowIndentor = wait.until(ExpectedConditions.visibilityOfElementLocated(activeSortingBy));
         wait.until(ExpectedConditions.attributeContains(arrowIndentor, "data-direction", "desc"));
     }
@@ -106,6 +119,9 @@ public class AllCoinPage {
         return isColumnOrdered(MARKET_CAP_CELLS_CSS, numberOfRows, true);
     }
 
+    public boolean checkMarketCapColumnOrderAsc(int numberOfRows) {
+        return isColumnOrdered(MARKET_CAP_CELLS_CSS, numberOfRows, false);
+    }
     public boolean checkVolumeCapColumnOrderDes(int numberOfRows) {
         return isColumnOrdered(VOLUME_CELLS_CSS, numberOfRows, true);
     }
@@ -113,4 +129,5 @@ public class AllCoinPage {
     public boolean checkVolumeCapColumnOrderAsc(int numberOfRows) {
         return isColumnOrdered(VOLUME_CELLS_CSS, numberOfRows, false);
     }
+
 }

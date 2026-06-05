@@ -38,4 +38,11 @@ public class SortAndFilterTest extends BaseTest {
         Assert.assertEquals(coinsPage.loadTheTable(), 101);
         Assert.assertTrue(coinsPage.checkVolumeCapColumnOrderDes(100));
     }
+
+    @Test
+    public void verifyMarketCapAsc() {
+        coinsPage.toggleVolumeOrderingDesc();
+        Assert.assertEquals(coinsPage.loadTheTable(), 101);
+        Assert.assertTrue(coinsPage.checkVolumeCapColumnOrderDes(100));
+    }
 }
