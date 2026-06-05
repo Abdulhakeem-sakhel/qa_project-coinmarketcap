@@ -26,16 +26,16 @@ public class SortAndFilterTest extends BaseTest {
 
     @Test
     public void verifyVolumeOrderingAsc() {
-        Assert.assertEquals(coinsPage.loadTheTable(), 101);
         coinsPage.toggleVolumeOrderingDesc();
         coinsPage.toggleVolumeOrderingAsc();
+        Assert.assertEquals(coinsPage.loadTheTable(), 101);
         Assert.assertTrue(coinsPage.checkVolumeCapColumnOrderAsc(100));
     }
     
     @Test
     public void verifyVolumeOrderingDes() {
-        Assert.assertEquals(coinsPage.loadTheTable(), 101);
         coinsPage.toggleVolumeOrderingDesc();
+        Assert.assertEquals(coinsPage.loadTheTable(), 101);
         Assert.assertTrue(coinsPage.checkVolumeCapColumnOrderDes(100));
     }
 }
