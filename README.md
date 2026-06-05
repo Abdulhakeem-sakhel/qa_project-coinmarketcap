@@ -36,6 +36,8 @@ coinmarketcap/
 │           └── search_ddt_data.csv    # Search test data
 └── doc/
     └── CoinMarketCap_Test_Plan.docx   # Test plan
+    └── Bug_Report_Converter.docs   # Test plan
+    └── coinmarketcap-test cases.xlsx   # Test plan
 ```
 
 ## Architecture
