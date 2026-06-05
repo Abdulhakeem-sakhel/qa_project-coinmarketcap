@@ -25,6 +25,7 @@ public class AllCoinPage {
 
     private By paginationListBy = new By.ByCssSelector("div.sc-4c05d6ef-0 ul.pagination");
     private By paginationNextButtonBy = new By.ByCssSelector("div.sc-4c05d6ef-0 ul.pagination li.next");
+    private By paginationLastPageButtonBy = new By.ByCssSelector("div.sc-4c05d6ef-0 ul.pagination li:nth-last-child(2)");
 
     private By numberOfRowsButtonPopup = new By.ByCssSelector("div[data-role='select-trigger']");
     private By getRowSelect(int row) {
@@ -180,15 +181,26 @@ public class AllCoinPage {
     }
 
     public void changeNumberOfRows(int rows) {
-        // keep a handle on a current row so we can detect when the table reloads
         WebElement existingRow = driver.findElement(marketCapCellsBy);
 
         WebElement rowsButton = wait.until(ExpectedConditions.presenceOfElementLocated(numberOfRowsButtonPopup));
         scrollIntoView(rowsButton);
         wait.until(ExpectedConditions.elementToBeClickable(rowsButton)).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(getRowSelect(rows))).click();
-
-        // changing the page size reloads the table; wait until the old rows are gone
         wait.until(ExpectedConditions.stalenessOf(existingRow));
+    }
+
+    public void goLastPage() {
+        scrollIntoView(driver.findElement(paginationListBy));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(paginationLastPageButtonBy)).click();
+    }
+
+    public boolean isNextPageButtonDisabled() {
+        try {
+            wait.until(ExpectedConditions.attributeContains(paginationNextButtonBy, "class", "disabled"));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

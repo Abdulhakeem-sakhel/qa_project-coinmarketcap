@@ -72,4 +72,10 @@ public class SortAndFilterTest extends BaseTest {
         coinsPage.loadTheTable();
         Assert.assertTrue(coinsPage.verifyMarketCapRange(min, max));
     }
+
+    @Test
+    public void verifyPaginationOverBoard() {
+        coinsPage.goLastPage();
+        Assert.assertTrue(coinsPage.isNextPageButtonDisabled());
+    }
 }
