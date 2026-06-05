@@ -11,4 +11,9 @@
             <class name="abd.coinmarketcap.ConverterPageTest"/>
         </classes>
     </test>
+    <test name="Sort And Filter Tests">
+        <classes>
+            <class name="abd.coinmarketcap.SortAndFilterTest"/>
+        </classes>
+    </test>
 </suite>
