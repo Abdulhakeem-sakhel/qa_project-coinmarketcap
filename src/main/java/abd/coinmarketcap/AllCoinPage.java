@@ -1,6 +1,7 @@
 package abd.coinmarketcap;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.By;
@@ -12,21 +13,35 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class AllCoinPage {
     // any column cell have a unique class even in a different layout
-    private By marketCapCellsBy = new By.ByCssSelector("span.sc-11478e5d-1");
-    private By volumeCellsBy = new By.ByCssSelector("div.sc-4c05d6ef-0.sc-8dd8fbb5-0 p.fOLOxZ");
+    private static final String MARKET_CAP_CELLS_CSS = "span.sc-11478e5d-1";
+    private static final String VOLUME_CELLS_CSS = "div.sc-4c05d6ef-0.sc-8dd8fbb5-0 p.fOLOxZ";
+    private static final String RANK_CELLS_CSS = "p.sc-71024e3e-0.biekbf";
 
-    private By marketCapSortingToggleBy = new By.ByXPath("//p[contains(@class, 'llNEXf') and contains(text(), 'Market Cap')]");
+    private By marketCapCellsBy = By.cssSelector(MARKET_CAP_CELLS_CSS);
+
     private By volumeSortingToggleBy = new By.ByXPath("//p[contains(@class, 'llNEXf') and contains(text(), 'Volume')]");
+    private By marketSortingToggleBy = new By.ByXPath("//p[contains(@class, 'llNEXf') and contains(text(), 'Market Cap')]");
     private By activeSortingBy = new By.ByCssSelector("span[data-active='true']");
+
+    private By paginationListBy = new By.ByCssSelector("div.sc-4c05d6ef-0 ul.pagination");
+    private By paginationNextButtonBy = new By.ByCssSelector("div.sc-4c05d6ef-0 ul.pagination li.next");
+    private By paginationLastPageButtonBy = new By.ByCssSelector("div.sc-4c05d6ef-0 ul.pagination li:nth-last-child(2)");
+
+    private By numberOfRowsButtonPopup = new By.ByCssSelector("div[data-role='select-trigger']");
+    private By getRowSelect(int row) {
+        return new By.ByXPath(String.format("//div[@data-role='pp-item']//div[contains(text(), '%s')]", row));
+    }
+    private By openFilterButtonBy = new By.ByXPath("//span[contains(text(), 'Filters')]");
+    private By maxRageInputMarketCapBy = new By.ByXPath("//div[contains(@class, 'Form_label__8XTvj') and contains(text(), 'Market Cap')]/..//input[contains(@placeholder, 'Max')]");
+    private By minRageInputMarketCapBy = new By.ByXPath("//div[contains(@class, 'Form_label__8XTvj') and contains(text(), 'Market Cap')]/..//input[contains(@placeholder, 'Min')]");
+    private By applyFilterButtonBy = new By.ByXPath("//div[contains(text(), 'Apply')]");
+
+    private static final int STABLE_ROUNDS = 6;
+
+    private static final double ORDER_TOLERANCE = 0.10;
 
     private WebDriver driver;
     private WebDriverWait wait;
-
-    private Long parseNumber(WebElement cell) {
-
-        String cleaned = cell.getText().replaceAll("[^0-9.]", ""); // keep digits and "."
-        return Long.parseLong(cleaned);
-    }
 
     public AllCoinPage(WebDriver driver) {
         this.driver = driver;
@@ -35,51 +50,29 @@ public class AllCoinPage {
 
     public int loadTheTable() {
         JavascriptExecutor js = (JavascriptExecutor) driver;
+        WebDriverWait growthWait = new WebDriverWait(driver, Duration.ofSeconds(2));
 
-        while (true) {
+        wait.until(ExpectedConditions.presenceOfElementLocated(marketCapCellsBy));
+
+        int stableRounds = 0;
+        while (stableRounds < STABLE_ROUNDS) {
             final int before = driver.findElements(marketCapCellsBy).size();
-            List<WebElement> rows = driver.findElements(marketCapCellsBy);
-            js.executeScript("arguments[0].scrollIntoView(true);", rows.get(rows.size() - 1));
+            // scroll gradually so each lazy-load batch is triggered as it enters the viewport
+            js.executeScript("window.scrollBy(0, document.documentElement.clientHeight * 0.7);");
             try {
-                wait.until(driver -> driver.findElements(marketCapCellsBy).size() > before);
+                growthWait.until(driver -> driver.findElements(marketCapCellsBy).size() > before);
+                stableRounds = 0; // new rows arrived, keep going
             } catch (Exception e) {
-                break;
+                stableRounds++;
             }
         }
         js.executeScript("window.scrollTo(0, 0);");
         return driver.findElements(marketCapCellsBy).size();
     }
 
-    public boolean checkMarketCapColumnOrderDes(int numberOfRows) {
-        List<WebElement> marketCapCells = driver.findElements(marketCapCellsBy);
-        int leftIndex = -1;
-        int rightIndex = -1;
-
-        if (marketCapCells.size() == numberOfRows + 1) {
-            leftIndex = 1; // the first index should be an advertisement skip it
-            rightIndex = 2;
-        } else {
-            leftIndex = 0;
-            rightIndex = 1;
-        }
-
-        while (leftIndex < marketCapCells.size() - 1) {
-            long leftValue = parseNumber(marketCapCells.get(leftIndex));
-            long rightValue = parseNumber(marketCapCells.get(rightIndex));
-            if (rightValue > leftValue) {
-                return false;
-            }
-            leftIndex++;
-            rightIndex++;
-        }
-        return true;
-    }
-
-    // ordering = desc or asc
     public void toggleVolumeOrderingAsc() {
-        WebElement arrowIndentor = driver.findElement(new By.ByCssSelector("span[data-active=\"true\"]"));
-        wait.until(ExpectedConditions.attributeContains(arrowIndentor, "data-direction", "desc"));
         driver.findElement(volumeSortingToggleBy).click();
+        WebElement arrowIndentor = wait.until(ExpectedConditions.visibilityOfElementLocated(activeSortingBy));
         wait.until(ExpectedConditions.attributeContains(arrowIndentor, "data-direction", "asc"));
     }
 
@@ -89,53 +82,125 @@ public class AllCoinPage {
         wait.until(ExpectedConditions.attributeContains(arrowIndentor, "data-direction", "desc"));
     }
 
-    public boolean checkVolumeCapColumnOrderDes(int numberOfRows) {
-        List<WebElement> priceCells = driver.findElements(volumeCellsBy);
-        int leftIndex = -1;
-        int rightIndex = -1;
+    public void toggleMarketCapOrderingAsc() {
+        driver.findElement(marketSortingToggleBy).click();
+        WebElement arrowIndentor = wait.until(ExpectedConditions.visibilityOfElementLocated(activeSortingBy));
+        wait.until(ExpectedConditions.attributeContains(arrowIndentor, "data-direction", "asc"));
+    }
 
-        if (priceCells.size() == numberOfRows + 1) {
-            leftIndex = 1; // the first index should be an advertisement skip it
-            rightIndex = 2;
-        } else {
-            leftIndex = 0;
-            rightIndex = 1;
-        }
+    public void toggleMarketCapOrderingDesc() {
+        driver.findElement(marketSortingToggleBy).click();
+        WebElement arrowIndentor = wait.until(ExpectedConditions.visibilityOfElementLocated(activeSortingBy));
+        wait.until(ExpectedConditions.attributeContains(arrowIndentor, "data-direction", "desc"));
+    }
 
-        while (leftIndex < priceCells.size() - 1) {
-            long leftValue = parseNumber(priceCells.get(leftIndex));
-            long rightValue = parseNumber(priceCells.get(rightIndex));
-            if (rightValue > leftValue ) {
+    private boolean isColumnOrdered(String css, int numberOfRows, boolean descending) {
+        List<Long> values = snapshotColumnValues(css);
+
+        // the first row can be an advertisement; skip it when present
+        int start = (values.size() == numberOfRows + 1) ? 1 : 0;
+
+        for (int cellIndex = start; cellIndex < values.size() - 1; cellIndex++) {
+            long current = values.get(cellIndex);
+            long next = values.get(cellIndex + 1);
+            if (descending && next > current + (long) (current * ORDER_TOLERANCE)) {
                 return false;
             }
-            leftIndex++;
-            rightIndex++;
+            if (!descending && next < current - (long) (current * ORDER_TOLERANCE)) {
+                return false;
+            }
         }
-        return true;    
+        return true;
+    }
+
+    private List<Long> snapshotColumnValues(String css) {
+        // this will take the hole column number in one go
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        List<String> texts = (List<String>) js.executeScript(
+                "return Array.from(document.querySelectorAll(arguments[0]), e => e.textContent);", css);
+
+        List<Long> values = new ArrayList<>(texts.size());
+        for (String text : texts) {
+            String cleaned = text.replaceAll("[^0-9]", ""); // keep digits only (values are integer dollar amounts)
+            if (!cleaned.isEmpty()) {
+                values.add(Long.parseLong(cleaned));
+            }
+        }
+        return values;
+    }
+
+    public boolean checkMarketCapColumnOrderDes(int numberOfRows) {
+        return isColumnOrdered(MARKET_CAP_CELLS_CSS, numberOfRows, true);
+    }
+
+    public boolean checkMarketCapColumnOrderAsc(int numberOfRows) {
+        return isColumnOrdered(MARKET_CAP_CELLS_CSS, numberOfRows, false);
+    }
+    public boolean checkVolumeCapColumnOrderDes(int numberOfRows) {
+        return isColumnOrdered(VOLUME_CELLS_CSS, numberOfRows, true);
     }
 
     public boolean checkVolumeCapColumnOrderAsc(int numberOfRows) {
-        List<WebElement> priceCells = driver.findElements(volumeCellsBy);
-        int leftIndex = -1;
-        int rightIndex = -1;
+        return isColumnOrdered(VOLUME_CELLS_CSS, numberOfRows, false);
+    }
 
-        if (priceCells.size() == numberOfRows + 1) {
-            leftIndex = 1; // the first index should be an advertisement skip it
-            rightIndex = 2;
-        } else {
-            leftIndex = 0;
-            rightIndex = 1;
-        }
+    private void scrollIntoView(WebElement element) {
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block: 'center'});", element);
+    }
 
-        while (leftIndex < priceCells.size() - 1) {
-            long leftValue = parseNumber(priceCells.get(leftIndex));
-            long rightValue = parseNumber(priceCells.get(rightIndex));
-            if (rightValue < leftValue) {
+    public boolean verifyRank(int start, int end) {
+        List<Long> rankList = snapshotColumnValues(RANK_CELLS_CSS);
+        for (long rank : rankList) {
+            if (rank < start || rank > end) {
                 return false;
             }
-            leftIndex++;
-            rightIndex++;
         }
-        return true;    
+        return true;
+    }
+    public void goNextPage() {
+        scrollIntoView(driver.findElement(paginationListBy));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(paginationNextButtonBy)).click();
+    }
+
+    public void setMarketCapRange(long min, long max) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(openFilterButtonBy)).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(minRageInputMarketCapBy)).sendKeys(String.valueOf(min));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(maxRageInputMarketCapBy)).sendKeys(String.valueOf(max));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(applyFilterButtonBy)).click();
+    }
+
+    public boolean verifyMarketCapRange(long min, long max) {
+        List<Long> marketCapValues = snapshotColumnValues(MARKET_CAP_CELLS_CSS);
+        for (long marketCapValue : marketCapValues) {
+            if (marketCapValue > max || marketCapValue < min) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void changeNumberOfRows(int rows) {
+        WebElement existingRow = driver.findElement(marketCapCellsBy);
+
+        WebElement rowsButton = wait.until(ExpectedConditions.presenceOfElementLocated(numberOfRowsButtonPopup));
+        scrollIntoView(rowsButton);
+        wait.until(ExpectedConditions.elementToBeClickable(rowsButton)).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(getRowSelect(rows))).click();
+        wait.until(ExpectedConditions.stalenessOf(existingRow));
+    }
+
+    public void goLastPage() {
+        scrollIntoView(driver.findElement(paginationListBy));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(paginationLastPageButtonBy)).click();
+    }
+
+    public boolean isNextPageButtonDisabled() {
+        try {
+            wait.until(ExpectedConditions.attributeContains(paginationNextButtonBy, "class", "disabled"));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
