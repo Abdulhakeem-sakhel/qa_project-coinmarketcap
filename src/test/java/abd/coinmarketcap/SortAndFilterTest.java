@@ -45,4 +45,10 @@ public class SortAndFilterTest extends BaseTest {
         Assert.assertEquals(coinsPage.loadTheTable(), 101);
         Assert.assertTrue(coinsPage.checkVolumeCapColumnOrderDes(100));
     }
+
+    @Test
+    public void goToTheSecondPage() {
+        coinsPage.goNextPage();
+        Assert.assertEquals(driver.getCurrentUrl(), BASE_URL + getPath() + "/?page=2");
+    }
 }

@@ -20,8 +20,10 @@ public class AllCoinPage {
 
     private By volumeSortingToggleBy = new By.ByXPath("//p[contains(@class, 'llNEXf') and contains(text(), 'Volume')]");
     private By marketSortingToggleBy = new By.ByXPath("//p[contains(@class, 'llNEXf') and contains(text(), 'Market Cap')]");
-
     private By activeSortingBy = new By.ByCssSelector("span[data-active='true']");
+
+    private By paginationListBy = new By.ByCssSelector("div.sc-4c05d6ef-0 ul.pagination");
+    private By paginationNextButtonBy = new By.ByCssSelector("div.sc-4c05d6ef-0 ul.pagination li.next");
 
     private static final int STABLE_ROUNDS = 3;
 
@@ -128,6 +130,18 @@ public class AllCoinPage {
 
     public boolean checkVolumeCapColumnOrderAsc(int numberOfRows) {
         return isColumnOrdered(VOLUME_CELLS_CSS, numberOfRows, false);
+    }
+
+    private void scrollToPagination() {
+        WebElement pagination = driver.findElement(paginationListBy);
+        ((JavascriptExecutor) driver).executeScript(
+                        "arguments[0].scrollIntoView({block: 'center'});"
+                                , pagination);
+    }
+
+    public void goNextPage() {
+        scrollToPagination();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(paginationNextButtonBy)).click();
     }
 
 }
