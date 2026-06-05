@@ -26,12 +26,16 @@ public class AllCoinPage {
     private By paginationListBy = new By.ByCssSelector("div.sc-4c05d6ef-0 ul.pagination");
     private By paginationNextButtonBy = new By.ByCssSelector("div.sc-4c05d6ef-0 ul.pagination li.next");
 
+    private By numberOfRowsButtonPopup = new By.ByCssSelector("div[data-role='select-trigger']");
+    private By getRowSelect(int row) {
+        return new By.ByXPath(String.format("//div[@data-role='pp-item']//div[contains(text(), '%s')]", row));
+    }
     private By openFilterButtonBy = new By.ByXPath("//span[contains(text(), 'Filters')]");
     private By maxRageInputMarketCapBy = new By.ByXPath("//div[contains(@class, 'Form_label__8XTvj') and contains(text(), 'Market Cap')]/..//input[contains(@placeholder, 'Max')]");
     private By minRageInputMarketCapBy = new By.ByXPath("//div[contains(@class, 'Form_label__8XTvj') and contains(text(), 'Market Cap')]/..//input[contains(@placeholder, 'Min')]");
     private By applyFilterButtonBy = new By.ByXPath("//div[contains(text(), 'Apply')]");
 
-    private static final int STABLE_ROUNDS = 3;
+    private static final int STABLE_ROUNDS = 6;
 
     private static final double ORDER_TOLERANCE = 0.10;
 
@@ -45,14 +49,15 @@ public class AllCoinPage {
 
     public int loadTheTable() {
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        WebDriverWait growthWait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebDriverWait growthWait = new WebDriverWait(driver, Duration.ofSeconds(2));
 
         wait.until(ExpectedConditions.presenceOfElementLocated(marketCapCellsBy));
 
         int stableRounds = 0;
         while (stableRounds < STABLE_ROUNDS) {
             final int before = driver.findElements(marketCapCellsBy).size();
-            js.executeScript("window.scrollBy(0, document.documentElement.clientHeight * 0.9);");
+            // scroll gradually so each lazy-load batch is triggered as it enters the viewport
+            js.executeScript("window.scrollBy(0, document.documentElement.clientHeight * 0.7);");
             try {
                 growthWait.until(driver -> driver.findElements(marketCapCellsBy).size() > before);
                 stableRounds = 0; // new rows arrived, keep going
@@ -138,12 +143,11 @@ public class AllCoinPage {
         return isColumnOrdered(VOLUME_CELLS_CSS, numberOfRows, false);
     }
 
-    private void scrollToPagination() {
-        WebElement pagination = driver.findElement(paginationListBy);
+    private void scrollIntoView(WebElement element) {
         ((JavascriptExecutor) driver).executeScript(
-                        "arguments[0].scrollIntoView({block: 'center'});"
-                                , pagination);
+                "arguments[0].scrollIntoView({block: 'center'});", element);
     }
+
     public boolean verifyRank(int start, int end) {
         List<Long> rankList = snapshotColumnValues(RANK_CELLS_CSS);
         for (long rank : rankList) {
@@ -154,7 +158,7 @@ public class AllCoinPage {
         return true;
     }
     public void goNextPage() {
-        scrollToPagination();
+        scrollIntoView(driver.findElement(paginationListBy));
         wait.until(ExpectedConditions.visibilityOfElementLocated(paginationNextButtonBy)).click();
     }
 
@@ -175,4 +179,16 @@ public class AllCoinPage {
         return true;
     }
 
+    public void changeNumberOfRows(int rows) {
+        // keep a handle on a current row so we can detect when the table reloads
+        WebElement existingRow = driver.findElement(marketCapCellsBy);
+
+        WebElement rowsButton = wait.until(ExpectedConditions.presenceOfElementLocated(numberOfRowsButtonPopup));
+        scrollIntoView(rowsButton);
+        wait.until(ExpectedConditions.elementToBeClickable(rowsButton)).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(getRowSelect(rows))).click();
+
+        // changing the page size reloads the table; wait until the old rows are gone
+        wait.until(ExpectedConditions.stalenessOf(existingRow));
+    }
 }

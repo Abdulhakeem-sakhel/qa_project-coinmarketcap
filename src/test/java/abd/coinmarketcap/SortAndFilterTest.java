@@ -41,16 +41,27 @@ public class SortAndFilterTest extends BaseTest {
 
     @Test
     public void verifyMarketCapAsc() {
-        coinsPage.toggleVolumeOrderingDesc();
+        coinsPage.toggleMarketCapOrderingDesc();
+        coinsPage.toggleMarketCapOrderingAsc();
         Assert.assertEquals(coinsPage.loadTheTable(), 101);
-        Assert.assertTrue(coinsPage.checkVolumeCapColumnOrderDes(100));
+        Assert.assertTrue(coinsPage.checkMarketCapColumnOrderAsc(100));
     }
 
     @Test
     public void goToTheSecondPage() {
         coinsPage.goNextPage();
         Assert.assertEquals(driver.getCurrentUrl(), BASE_URL + getPath() + "/?page=2");
+        coinsPage.loadTheTable();
         Assert.assertTrue(coinsPage.verifyRank(101, 200));
+    }
+
+    @Test
+    public void changeRows() {
+        int newRows = 200;
+
+        coinsPage.changeNumberOfRows(newRows);
+        //there is an extra 
+        Assert.assertEquals(coinsPage.loadTheTable(), newRows + 1);
     }
 
     @Test
