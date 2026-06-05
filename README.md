@@ -21,6 +21,7 @@ coinmarketcap/
 ├── testng.xml                       # TestNG suite that runs all test classes
 ├── src/
 │   ├── main/java/abd/coinmarketcap/
+│   │   ├── AllCoinPage.java         # All-coins table (sort, filter, pagination, rows-per-page)
 │   │   ├── CoinDetailPage.java      # Coin detail page (name, symbol, URL, live price)
 │   │   ├── ConverterPage.java       # Crypto converter page
 │   │   ├── SearchComponent.java     # Global search component
@@ -30,7 +31,8 @@ coinmarketcap/
 │       ├── java/abd/coinmarketcap/
 │       │   ├── BaseTest.java         # WebDriver setup/teardown, base URL
 │       │   ├── ConverterPageTest.java
-│       │   └── SearchTest.java
+│       │   ├── SearchTest.java
+│       │   └── SortAndFilterTest.java
 │       └── resources/
 │           ├── converter_ddt_data.csv # Converter test data
 │           └── search_ddt_data.csv    # Search test data
@@ -59,6 +61,23 @@ Driven by [converter_ddt_data.csv](src/test/resources/converter_ddt_data.csv). B
 - `NUMERIC_RESULT` – a numeric conversion result is displayed for valid input.
 - `SWAP_UPDATES` – swapping currencies updates the result.
 - `REJECT_INPUT` – invalid input (letters, special characters) is rejected and the default value remains.
+
+### Sort & Filter (`SortAndFilterTest`)
+Exercises the all-coins table at `/coins` via the `AllCoinPage` page object. The table is lazy-loaded, so `loadTheTable()` scrolls until the row count stabilizes before any assertion.
+
+**Sorting**
+- `verifyTheDefaultTableOrdering` - the default view is sorted by Market Cap descending.
+- `verifyMarketCapAsc` - toggling the Market Cap header sorts ascending.
+- `verifyVolumeOrderingAsc` / `verifyVolumeOrderingDes` - toggling the Volume header sorts the volume column ascending / descending.
+
+Order checks use a small tolerance to absorb live price fluctuations between cell reads and skip the leading advertisement row when present.
+
+**Filtering**
+- `filteringRangeMarketCap` - applying a Market Cap min/max range returns only coins whose market cap falls within that range.
+
+**Pagination & rows-per-page**
+- `goToTheSecondPage` - clicking *Next* navigates to `?page=2` and shows ranks 101-200.
+- `changeRows` - changing the rows-per-page selector to 200 reloads the table and renders 200 rows.
 
 ## Prerequisites
 
