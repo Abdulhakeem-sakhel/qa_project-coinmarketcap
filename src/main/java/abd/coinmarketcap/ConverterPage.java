@@ -71,8 +71,6 @@ public class ConverterPage {
     public boolean verifyCurrency(String fromCurrency, String toCurrency) {
         String fromText = wait.until(ExpectedConditions.visibilityOfElementLocated(fromConvertTextBy)).getText();
         String toText = wait.until(ExpectedConditions.visibilityOfElementLocated(toConvertTextBy)).getText();
-        System.out.println(fromText);
-        System.out.println(toText);
         return fromText.toLowerCase().contains(fromCurrency.toLowerCase()) &&
                 toText.toLowerCase().contains(toCurrency.toLowerCase());
     }
