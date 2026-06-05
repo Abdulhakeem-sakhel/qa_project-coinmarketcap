@@ -14,6 +14,7 @@ public class SearchComponent {
 	private By searchInputBy = new By.ByCssSelector("input.search-input");
 	private By searchResultsCoinNamesBy = new By.ByCssSelector("div.SearchCryptoRow_item-name__OwkC9 > span:first-child");
 	private By searchResultsCoinSymbolBy = new By.ByCssSelector("div.SearchCryptoRow_item-symbol__gYcb1");
+	private By searchCategoryCypherAssetsBy = new By.ByXPath("//div[@data-role='chip-content-item' and contains(text(), 'Cryptoassets')]");
 
 	@SuppressWarnings("unused")
 	private WebDriver driver;
@@ -52,5 +53,14 @@ public class SearchComponent {
 		}
 		
 		return true;
+	}
+
+	public boolean verifyCypherAssetAppears() {
+		try {
+			wait.until(ExpectedConditions.visibilityOfElementLocated(searchCategoryCypherAssetsBy));
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }

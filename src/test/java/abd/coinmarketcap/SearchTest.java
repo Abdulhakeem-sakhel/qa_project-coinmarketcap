@@ -89,15 +89,11 @@ public class SearchTest extends BaseTest {
 
     @Test
     public void searchWithGibberishLetters() {
-        String coinName = " Bitcoin ";
-        String coinSymbol = "BTC";
+        String coinName = "fdsafafs";
         searchCom.openSearch();
         searchCom.writeInSearchInput(coinName);
-        searchCom.selectFirstSearchResults();
         
-        Assert.assertTrue(coinPage.verifyCoinUrl(coinName.trim()), "The url is for another coin which is " + driver.getCurrentUrl());
-        Assert.assertTrue(coinPage.verifyCoinName(coinName.trim()), "The name of the coin is not there");
-        Assert.assertTrue(coinPage.verifyCoinSymbol(coinSymbol));
-        Assert.assertTrue(coinPage.verifyLivePriceIsDisplayed(), "The price is not displayed");
+        Assert.assertFalse(searchCom.verifyCypherAssetAppears());
     }
+
 }
