@@ -25,6 +25,11 @@ public class AllCoinPage {
     private By paginationListBy = new By.ByCssSelector("div.sc-4c05d6ef-0 ul.pagination");
     private By paginationNextButtonBy = new By.ByCssSelector("div.sc-4c05d6ef-0 ul.pagination li.next");
 
+    private By openFilterButtonBy = new By.ByXPath("//span[contains(text(), 'Filters')]");
+    private By maxRageInputMarketCapBy = new By.ByXPath("//div[contains(@class, 'Form_label__8XTvj') and contains(text(), 'Market Cap')]/..//input[contains(@placeholder, 'Max')]");
+    private By minRageInputMarketCapBy = new By.ByXPath("//div[contains(@class, 'Form_label__8XTvj') and contains(text(), 'Market Cap')]/..//input[contains(@placeholder, 'Min')]");
+    private By applyFilterButtonBy = new By.ByXPath("//div[contains(text(), 'Apply')]");
+
     private static final int STABLE_ROUNDS = 3;
 
     private static final double ORDER_TOLERANCE = 0.10;
@@ -142,6 +147,23 @@ public class AllCoinPage {
     public void goNextPage() {
         scrollToPagination();
         wait.until(ExpectedConditions.visibilityOfElementLocated(paginationNextButtonBy)).click();
+    }
+
+    public void setMarketCapRange(long min, long max) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(openFilterButtonBy)).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(minRageInputMarketCapBy)).sendKeys(String.valueOf(min));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(maxRageInputMarketCapBy)).sendKeys(String.valueOf(max));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(applyFilterButtonBy)).click();
+    }
+
+    public boolean verifyMarketCapRange(long min, long max) {
+        List<Long> marketCapValues = snapshotColumnValues(MARKET_CAP_CELLS_CSS);
+        for (long marketCapValue : marketCapValues) {
+            if (marketCapValue > max || marketCapValue < min) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

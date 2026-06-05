@@ -51,4 +51,13 @@ public class SortAndFilterTest extends BaseTest {
         coinsPage.goNextPage();
         Assert.assertEquals(driver.getCurrentUrl(), BASE_URL + getPath() + "/?page=2");
     }
+
+    @Test
+    public void filteringRangeMarketCap() {
+        long min = 100000000;
+        long max = 150000000;
+        coinsPage.setMarketCapRange(min, max);
+        coinsPage.loadTheTable();
+        Assert.assertTrue(coinsPage.verifyMarketCapRange(min, max));
+    }
 }
