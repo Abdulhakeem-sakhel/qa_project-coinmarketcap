@@ -14,6 +14,8 @@ public class WatchlistPage {
     private By searchCoinInputBy = new By.ByCssSelector("div.sc-c98001fb-0 input.cmc-input.input-el");
     private By searchResultsBy = new By.ByCssSelector("div.coin-item-list-wrapper");
     private By saveButtonBy = new By.ByXPath("//div[@data-role='btn-content-item' and contains(text(), 'Save')]");
+    private By deleteRowButtonBy = new By.ByCssSelector("span.icon-Star-Filled");
+    private By deleteMessageBy = new By.ByCssSelector("//span[@data-role='mi-content-item' and contains(text(), 'has been removed')]");
     private By coinNameCellsBy = new By.ByCssSelector("p.coin-item-name");
     private By coinSymbolCellsBy = new By.ByCssSelector("coin-item-symbol");
 
@@ -36,5 +38,29 @@ public class WatchlistPage {
             }
         }
         wait.until(ExpectedConditions.visibilityOfElementLocated(saveButtonBy)).click();
+    }
+
+    private int getCoinRowIndex(String coinName) {
+        try {
+            List<WebElement> namesCell = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(coinNameCellsBy));
+            for (int rowIndex = 0; rowIndex < namesCell.size(); rowIndex++) {
+                WebElement name = namesCell.get(rowIndex);
+                if (name.getText().contains(coinName)) {
+                    return rowIndex;
+                }
+            }
+        } catch(Exception e) {
+            return -1;
+        }
+        return -1;
+    }
+
+    public void deleteCoin(String coinName) {
+        int rowIndex = getCoinRowIndex(coinName);
+        if (rowIndex == -1) {
+            //throw new Exception("didn't find the coin name");
+        }
+        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(deleteRowButtonBy)).get(rowIndex).click();;
+
     }
 }

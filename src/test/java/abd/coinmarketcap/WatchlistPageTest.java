@@ -28,7 +28,12 @@ public class WatchlistPageTest extends BaseTest {
 
     
     @Test
-    public void bad() {
+    public void addCoin() {
         watchlistPage.addCoinToWhishList("ETH");
+    }
+
+    @Test
+    public void deleteCoin() {
+        watchlistPage.deleteCoin("Bitcoin");
     }
 }
