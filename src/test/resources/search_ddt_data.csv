@@ -1,0 +1,10 @@
+TestCaseId,Keyword,ExpectedCoinName,ExpectedCoinSymbol,ExpectedBehavior,Description
+TC_SR_01,Bitcoin,Bitcoin,BTC,SELECT_FIRST_VERIFY_COIN,Search by full coin name opens the correct coin page
+TC_SR_02,ETH,Ethereum,ETH,SELECT_FIRST_VERIFY_COIN,Search by coin symbol opens the correct coin page
+TC_SR_03,doge,,,VERIFY_RESULTS_CONTAIN,All results contain the keyword in name or symbol
+TC_SR_04,bitcoin,Bitcoin,BTC,SELECT_FIRST_VERIFY_COIN,Search is case insensitive
+TC_SR_05,{WHITE_SPACE} ,Bitcoin,BTC,SELECT_FIRST_VERIFY_COIN,Search ignores leading/trailing whitespace
+TC_SR_06,fdsafafs,,,NO_RESULTS,Gibberish letters return no cryptoasset results
+TC_SR_07,$%^&*#@!,,,NO_RESULTS,Special characters return no cryptoasset results
+TC_SR_08,1332133211,,,NO_RESULTS,Numbers only return no cryptoasset results
+TC_SR_09,{LONG_STR},,,NO_RESULTS,Very long word returns no cryptoasset results
