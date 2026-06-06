@@ -40,4 +40,14 @@ public class WatchlistPageTest extends BaseTest {
         watchlistPage.deleteCoin(coinName);
         Assert.assertTrue(watchlistPage.verifyDeleteMessage(coinName));
     }
+
+    @Test 
+    public void theCoinWatchListIsPersists() {
+        String coinName = "Ethereum";
+        watchlistPage.addCoinToWhishList(coinName);
+        driver.navigate().refresh();
+        Assert.assertNotEquals(watchlistPage.getCoinRowIndex(coinName), -1);
+
+        watchlistPage.deleteCoin(coinName);
+    }
 }
