@@ -27,21 +27,21 @@ public class WatchlistPageTest extends BaseTest {
     }
 
     
-    @Test
+    @Test (priority = 1)
     public void addCoin() {
         String coinName = "Ethereum";
         watchlistPage.addCoinToWhishList(coinName);
         Assert.assertNotEquals(watchlistPage.getCoinRowIndex(coinName), -1);
     }
 
-    @Test
+    @Test (priority = 2)
     public void deleteCoin() {
         String coinName = "Ethereum";
         watchlistPage.deleteCoin(coinName);
         Assert.assertTrue(watchlistPage.verifyDeleteMessage(coinName));
     }
 
-    @Test 
+    @Test (priority = 3)
     public void theCoinWatchListIsPersists() {
         String coinName = "Ethereum";
         watchlistPage.addCoinToWhishList(coinName);
@@ -57,17 +57,22 @@ public class WatchlistPageTest extends BaseTest {
         Assert.assertTrue(watchlistPage.verifyDeleteMessage(coinName));
     }
 
-    @Test
+    @Test (priority = 4)
     public void addMultipleCoin() {
         String[] coinNames = {"Bitcoin", "Ethereum", "Solana"};
         for (String coinName: coinNames) {
             watchlistPage.addCoinToWhishList(coinName);
             Assert.assertNotEquals(watchlistPage.getCoinRowIndex(coinName), -1);
         }
-        
+    }
+
+    @Test (priority = 5)
+    public void deleteAllTest() {
+        String[] coinNames = {"Bitcoin", "Ethereum", "Solana"};
         for (String coinName: coinNames) {
             watchlistPage.deleteCoin(coinName);
             Assert.assertTrue(watchlistPage.verifyDeleteMessage(coinName), "failed to delete :" + coinName);
         }
+        Assert.assertTrue(watchlistPage.verifyEmptyWatchListMessage());
     }
 }

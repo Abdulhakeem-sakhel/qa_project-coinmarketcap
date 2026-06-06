@@ -1,5 +1,6 @@
 package abd.coinmarketcap;
 
+import java.rmi.server.ExportException;
 import java.time.Duration;
 import java.util.List;
 
@@ -10,12 +11,13 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class WatchlistPage {
-    private By addCoinButtonBy = new By.ByXPath("//span[contains(text(), 'New Asset')]");
+    private By addCoinButtonBy = new By.ByXPath("//span[contains(text(), 'New Asset')]/ancestor::button");
     private By searchCoinInputBy = new By.ByCssSelector("div.sc-c98001fb-0 input.cmc-input.input-el");
     private By searchResultsBy = new By.ByCssSelector("div.coin-item-list-wrapper");
     private By saveButtonBy = new By.ByXPath("//div[@data-role='btn-content-item' and contains(text(), 'Save')]");
     private By deleteRowButtonBy = new By.ByCssSelector("span.icon-Star-Filled");
     private By coinNameCellsBy = new By.ByCssSelector("p.coin-item-name");
+    private By emptyWatchListMessage = new By.ByXPath("//h3[contains(text(), 'Add Coins to Your Watchlist')]");
     private By coinSymbolCellsBy = new By.ByCssSelector("coin-item-symbol");
 
     private By getDeleteMessageBy(String coinName) {
@@ -30,7 +32,7 @@ public class WatchlistPage {
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
     public void addCoinToWhishList(String coinName) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(addCoinButtonBy)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(addCoinButtonBy)).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(searchCoinInputBy)).sendKeys(coinName);
 
         List<WebElement> resultsElement = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(searchResultsBy));
@@ -75,6 +77,15 @@ public class WatchlistPage {
             wait.until(ExpectedConditions.stalenessOf(message));
             return true;
         } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean verifyEmptyWatchListMessage() {
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(emptyWatchListMessage));
+            return true;
+        } catch(Exception e) {
             return false;
         }
     }
