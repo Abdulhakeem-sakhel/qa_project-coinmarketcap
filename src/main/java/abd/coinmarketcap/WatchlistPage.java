@@ -38,6 +38,9 @@ public class WatchlistPage {
             }
         }
         wait.until(ExpectedConditions.visibilityOfElementLocated(saveButtonBy)).click();
+
+        wait.until(driver -> driver.findElements(coinNameCellsBy).stream()
+                .anyMatch(cell -> cell.getText().contains(coinName)));
     }
 
     public int getCoinRowIndex(String coinName) {
