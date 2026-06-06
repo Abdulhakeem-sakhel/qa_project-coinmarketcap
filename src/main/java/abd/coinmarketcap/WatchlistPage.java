@@ -15,9 +15,12 @@ public class WatchlistPage {
     private By searchResultsBy = new By.ByCssSelector("div.coin-item-list-wrapper");
     private By saveButtonBy = new By.ByXPath("//div[@data-role='btn-content-item' and contains(text(), 'Save')]");
     private By deleteRowButtonBy = new By.ByCssSelector("span.icon-Star-Filled");
-    private By deleteMessageBy = new By.ByXPath("//span[@data-role='mi-content-item' and contains(text(), 'has been removed')]");
     private By coinNameCellsBy = new By.ByCssSelector("p.coin-item-name");
     private By coinSymbolCellsBy = new By.ByCssSelector("coin-item-symbol");
+
+    private By getDeleteMessageBy(String coinName) {
+        return new By.ByXPath(String.format("//span[@data-role='mi-content-item' and contains(text(), '%s has been removed')]", coinName));
+    }
 
     private WebDriver driver;
     private WebDriverWait wait;
@@ -67,9 +70,12 @@ public class WatchlistPage {
 
     }
     public boolean verifyDeleteMessage(String coinName) {
-        
-            WebElement message = wait.until(ExpectedConditions.visibilityOfElementLocated(deleteMessageBy));
-            return message.getText().contains(coinName);
-        
+        try {
+            WebElement message = wait.until(ExpectedConditions.visibilityOfElementLocated(getDeleteMessageBy(coinName)));
+            wait.until(ExpectedConditions.stalenessOf(message));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
