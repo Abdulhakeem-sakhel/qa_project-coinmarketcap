@@ -25,6 +25,8 @@ coinmarketcap/
 │   │   ├── CoinDetailPage.java      # Coin detail page (name, symbol, URL, live price)
 │   │   ├── ConverterPage.java       # Crypto converter page
 │   │   ├── SearchComponent.java     # Global search component
+│   │   ├── LoginComponent.java      # UI login & session verification
+│   │   ├── WatchlistPage.java       # Watchlist: add/delete coins, prompts, messages
 │   │   └── util/
 │   │       └── RandomStringUtil.java # Random string generator for edge cases
 │   └── test/
@@ -32,7 +34,8 @@ coinmarketcap/
 │       │   ├── BaseTest.java         # WebDriver setup/teardown, base URL
 │       │   ├── ConverterPageTest.java
 │       │   ├── SearchTest.java
-│       │   └── SortAndFilterTest.java
+│       │   ├── SortAndFilterTest.java
+│       │   └── WatchlistPageTest.java
 │       └── resources/
 │           ├── converter_ddt_data.csv # Converter test data
 │           └── search_ddt_data.csv    # Search test data
@@ -81,6 +84,16 @@ Order checks use a small tolerance to absorb live price fluctuations between cel
 - `goToTheSecondPage` - clicking *Next* navigates to `?page=2` and shows ranks 101-200.
 - `changeRows` - changing the rows-per-page selector to 200 reloads the table and renders 200 rows.
 
+### Watchlist (`WatchlistPageTest`)
+Exercises the logged-in watchlist via the `WatchlistPage` page object and `LoginComponent`. Because repeated UI logins trigger CoinMarketCap's CAPTCHA, the suite performs **one real UI login**, captures the session cookies, and re-injects them for subsequent tests (`@BeforeMethod` on the `loggedIn` group). Logged-in tests run in priority order.
+
+- `addCoin` - add a coin to the watchlist and verify the row appears.
+- `deleteCoin` - remove a coin and verify the "removed" toast appears then disappears.
+- `theCoinWatchListIsPersists` - add a coin, restart the browser, restore the session, and confirm the coin is still present (persistence).
+- `addMultipleCoin` - add several coins and verify each row is rendered.
+- `deleteAllTest` - delete every coin and verify the empty-watchlist message.
+- `addCoinLogout` - while logged out, adding a coin shows the "save your watchlist permanently" prompt, which is then dismissed.
+
 ## Prerequisites
 
 - JDK 21
@@ -100,11 +113,8 @@ Run a single test class:
 ```bash
 mvn test -Dtest=SearchTest
 mvn test -Dtest=ConverterPageTest
+mvn test -Dtest=SortAndFilterTest
+mvn test -Dtest=WatchlistPageTest
 ```
 
 You can also run the suite directly from an IDE by right-clicking `testng.xml` and choosing **Run As → TestNG Suite**.
-
-
-## Author
-
-Abdulhakeem

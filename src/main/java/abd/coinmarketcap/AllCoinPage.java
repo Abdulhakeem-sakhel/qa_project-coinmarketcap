@@ -58,7 +58,7 @@ public class AllCoinPage {
         while (stableRounds < STABLE_ROUNDS) {
             final int before = driver.findElements(marketCapCellsBy).size();
             // scroll gradually so each lazy-load batch is triggered as it enters the viewport
-            js.executeScript("window.scrollBy(0, document.documentElement.clientHeight * 0.7);");
+            js.executeScript("window.scrollBy(0, document.documentElement.clientHeight * 1.1);");
             try {
                 growthWait.until(driver -> driver.findElements(marketCapCellsBy).size() > before);
                 stableRounds = 0; // new rows arrived, keep going
@@ -121,7 +121,7 @@ public class AllCoinPage {
 
         List<Long> values = new ArrayList<>(texts.size());
         for (String text : texts) {
-            String cleaned = text.replaceAll("[^0-9]", ""); // keep digits only (values are integer dollar amounts)
+            String cleaned = text.replaceAll("[^0-9]", "");
             if (!cleaned.isEmpty()) {
                 values.add(Long.parseLong(cleaned));
             }
