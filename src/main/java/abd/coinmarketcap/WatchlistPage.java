@@ -1,6 +1,5 @@
 package abd.coinmarketcap;
 
-import java.rmi.server.ExportException;
 import java.time.Duration;
 import java.util.List;
 
@@ -20,7 +19,6 @@ public class WatchlistPage {
     private By emptyWatchListMessageBy = new By.ByXPath("//h3[contains(text(), 'Add Coins to Your Watchlist')]");
     private By logoutPromptExitButtonBy = new By.ByXPath("//div[@data-scope='modal-container']//button[@aria-label='Close']");
     private By logoutPromptMessageBy = new By.ByXPath("//div[@data-scope='modal-container']//span[contains(text(), 'Save your watchlist permanently')]");
-    private By coinSymbolCellsBy = new By.ByCssSelector("coin-item-symbol");
 
     private By getDeleteMessageBy(String coinName) {
         return new By.ByXPath(String.format("//span[@data-role='mi-content-item' and contains(text(), '%s has been removed')]", coinName));

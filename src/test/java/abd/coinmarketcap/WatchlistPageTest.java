@@ -1,5 +1,8 @@
 package abd.coinmarketcap;
 
+import java.util.Set;
+
+import org.openqa.selenium.Cookie;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -9,6 +12,9 @@ public class WatchlistPageTest extends BaseTest {
 
     LoginComponent loginComponent;
     WatchlistPage watchlistPage;
+    // Captured once after the first UI login and re-injected for later tests so
+    // we don't log in/out repeatedly (which triggers CoinMarketCap's CAPTCHA).
+    private Set<Cookie> sessionCookies;
     @Override
     protected String getPath() {
         return "/?type=coins&tableRankBy=watchlist";
@@ -22,12 +28,29 @@ public class WatchlistPageTest extends BaseTest {
 
     @BeforeMethod(onlyForGroups = "loggedIn")
     public void login() {
-        doLogin();
+        if (sessionCookies == null) {
+            // First logged-in test: do a real UI login and remember the session.
+            doLogin();
+            sessionCookies = driver.manage().getCookies();
+        } else {
+            // Reuse the saved session instead of logging in again.
+            restoreSession();
+        }
     }
 
     private void doLogin() {
         loginComponent.loginFromUI("abodhakeemfabl@gmail.com", "Ab548220-*");
         Assert.assertTrue(loginComponent.isLogin());
+    }
+    // Re-inject the previously captured session cookies so the user stays log in
+    private void restoreSession() {
+        for (Cookie cookie : sessionCookies) {
+            try {
+                driver.manage().addCookie(cookie);
+            } catch (Exception e) {
+            }
+        }
+        driver.navigate().refresh();
     }
 
     
@@ -54,7 +77,8 @@ public class WatchlistPageTest extends BaseTest {
         this.tearDown();
         this.setUp();
         this.initPages();
-        this.doLogin();
+        // Restore the saved session in the fresh browser instead of re-logging in.
+        this.restoreSession();
 
         Assert.assertNotEquals(watchlistPage.getCoinRowIndex(coinName), -1);
         watchlistPage.deleteCoin(coinName);
