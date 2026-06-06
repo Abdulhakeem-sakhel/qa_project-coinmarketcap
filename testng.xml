@@ -16,4 +16,9 @@
             <class name="abd.coinmarketcap.SortAndFilterTest"/>
         </classes>
     </test>
+    <test name="Watchlist Tests">
+        <classes>
+            <class name="abd.coinmarketcap.WatchlistPageTest"/>
+        </classes>
+    </test>
 </suite>
