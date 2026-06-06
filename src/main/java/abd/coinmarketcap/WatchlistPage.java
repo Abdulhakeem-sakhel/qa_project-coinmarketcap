@@ -17,7 +17,9 @@ public class WatchlistPage {
     private By saveButtonBy = new By.ByXPath("//div[@data-role='btn-content-item' and contains(text(), 'Save')]");
     private By deleteRowButtonBy = new By.ByCssSelector("span.icon-Star-Filled");
     private By coinNameCellsBy = new By.ByCssSelector("p.coin-item-name");
-    private By emptyWatchListMessage = new By.ByXPath("//h3[contains(text(), 'Add Coins to Your Watchlist')]");
+    private By emptyWatchListMessageBy = new By.ByXPath("//h3[contains(text(), 'Add Coins to Your Watchlist')]");
+    private By logoutPromptExitButtonBy = new By.ByXPath("//div[@data-scope='modal-container']//button[@aria-label='Close']");
+    private By logoutPromptMessageBy = new By.ByXPath("//div[@data-scope='modal-container']//span[contains(text(), 'Save your watchlist permanently')]");
     private By coinSymbolCellsBy = new By.ByCssSelector("coin-item-symbol");
 
     private By getDeleteMessageBy(String coinName) {
@@ -83,10 +85,23 @@ public class WatchlistPage {
 
     public boolean verifyEmptyWatchListMessage() {
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(emptyWatchListMessage));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(emptyWatchListMessageBy));
             return true;
         } catch(Exception e) {
             return false;
         }
+    }
+
+    public boolean verifyLogoutPromptMessage() {
+        try {
+            wait.until(ExpectedConditions.visibilityOfElementLocated(logoutPromptMessageBy));
+            return true;
+        } catch(Exception e) {
+            return false;
+        }
+    }
+
+    public void closeLogoutPromptMessage() {
+        wait.until(ExpectedConditions.elementToBeClickable(logoutPromptExitButtonBy)).click();
     }
 }
